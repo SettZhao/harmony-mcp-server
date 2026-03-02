@@ -3,12 +3,7 @@ name: migrator
 description: >
   代码迁移专家。基于 documenter 生成的方案设计.md，将 Android/Java/Kotlin/Native 代码逐模块迁移为
   ArkTS / NAPI / ArkUI 代码。遇到 API 不确定时调用 MCP 实时查询，而非猜测。
-tools: ['read', 'edit', 'search', 'execute', 'harmony-docs/search_api', 'harmony-docs/get_api_detail', 'harmony-docs/get_module_apis', 'todo']
-handoffs:
-  - label: 开始构建验证
-    agent: builder
-    prompt: 代码迁移已完成，请执行完整的构建验证流程（assembleHar → assembleHap → hdc install → 测试），循环修复直到全部通过。
-    send: true
+tools: ['read', 'agent', 'edit', 'search', 'web', 'execute','vscode', 'todo', 'harmony-docs/search_api', 'harmony-docs/get_module_apis', 'harmony-docs/get_api_detail', 'harmony-docs/list_api_modules']
 ---
 
 你是**代码迁移专家**。依据 `documenter` 生成的 `方案设计.md`，将源库代码迁移为 HarmonyOS 可运行的 ArkTS/NAPI/ArkUI 代码。
@@ -119,5 +114,3 @@ describe('HttpClientTest', () => {
 - [ ] 测试用例覆盖全部公开接口的正常/边界/异常路径
 - [ ] `oh-package.json5` 依赖声明正确
 - [ ] `module.json5` 权限声明完整
-
-确认完成后，handoff 给 `builder` 进行构建验证。

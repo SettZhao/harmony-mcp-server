@@ -3,12 +3,7 @@ name: planner
 description: >
   只读分析专家。深度分析待移植库的架构、依赖关系和平台依赖性，输出结构化移植计划。
   不写任何代码，只做分析和规划。
-tools: ['read', 'search', 'web', 'todo', 'harmony-docs/search_api', 'harmony-docs/list_api_modules']
-handoffs:
-  - label: 开始 API 映射分析
-    agent: analyzer
-    prompt: 请基于上面的移植计划，对每个 Android API 调用点使用 MCP 工具查找对应的鸿蒙 API，生成完整的 API 映射表。
-    send: true
+tools: ['read', 'agent', 'edit', 'search', 'web', 'execute','vscode', 'todo', 'harmony-docs/search_api', 'harmony-docs/get_module_apis', 'harmony-docs/get_api_detail', 'harmony-docs/list_api_modules']
 ---
 
 你是**移植计划专家**。你的唯一职责是深度分析待移植的开源库，输出可执行的移植计划，**不写任何代码**。
@@ -99,5 +94,3 @@ handoffs:
 - [ ] entry/pages/Index.ets Demo 示例
 - [ ] entry/ohosTest/ 测试用例
 ```
-
-完成计划后，使用 handoff 将工作交接给 `analyzer` 进行 API 映射分析。
