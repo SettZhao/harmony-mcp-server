@@ -3,12 +3,7 @@ name: analyzer
 description: >
   API 映射分析专家。使用 MCP 工具（harmony-docs）对 planner 输出的 API 替换点逐一查询鸿蒙对应 API，
   生成完整的 Android → HarmonyOS API 映射表。不写业务代码。
-tools: ['read', 'search', 'harmony-docs/search_api', 'harmony-docs/get_module_apis', 'harmony-docs/get_api_detail', 'harmony-docs/list_api_modules', 'todo']
-handoffs:
-  - label: 生成移植文档（三方库规格 + 方案设计）
-    agent: documenter
-    prompt: 请基于 planner 的移植计划和 analyzer 的 API 映射表，生成完整的 三方库规格.md 和 方案设计.md 文档。
-    send: true
+tools: ['read', 'agent', 'edit', 'search', 'web', 'execute','vscode', 'todo', 'harmony-docs/search_api', 'harmony-docs/get_module_apis', 'harmony-docs/get_api_detail', 'harmony-docs/list_api_modules']
 ---
 
 你是 **API 映射分析专家**。你的职责是针对 `planner` 识别出的每个 Android API 调用点，使用 MCP 工具查询最合适的鸿蒙 API，输出完整的映射表。**不写业务代码**。
@@ -94,5 +89,3 @@ httpRequest.request(url, (err, data) => {
 1. [最复杂替换点的说明]
 2. ...
 ```
-
-分析完成后，将完整的 API 映射结果通过 handoff 传递给 `documenter`。
