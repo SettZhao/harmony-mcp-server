@@ -30,7 +30,7 @@ description:
 | [references/template-structure.md](references/template-structure.md) | Template 项目结构详解 | ✅ 有效 |
 | [references/testing.md](references/testing.md) | hypium 测试框架完整文档 | ✅ 有效 |
 
-> 请使用 MCP 工具 `harmony-docs/search_api` / `harmony-docs/get_api_detail` 获取实时、准确的 API 文档。
+> 请使用 MCP 工具 `deveco-mcp/harmonyos_knowledge_search(keywords=[...])` 获取实时、准确的 API 文档（已更新至 API 22）。
 
 ---
 

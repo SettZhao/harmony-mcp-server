@@ -54,21 +54,38 @@ library-port-to-harmony-by-agent/
        ↓
    [migrator]      逐模块迁移代码（Java/Kotlin → ArkTS / JNI → NAPI / View → ArkUI）
        ↓
-   [builder]       hvigorw 构建 → hdc 安装 → hypium 测试，循环修复直到全部通过
+   [builder]       deveco-mcp 构建 → start_app 安装 → hypium 测试，循环修复直到全部通过
 ```
 
 | Agent | 工具权限 |
 |-------|---------|
-| `port-to-harmony` | read, search, todo |
-| `planner` | read, search, harmony-docs MCP |
-| `analyzer` | harmony-docs MCP（全部 4 个工具） |
-| `documenter` | read, edit |
-| `migrator` | read, edit, execute, harmony-docs MCP |
-| `builder` | execute, read, edit |
+| `port-to-harmony` | read, search, todo, deveco-mcp/* |
+| `planner` | read, search, deveco-mcp/harmonyos_knowledge_search |
+| `analyzer` | deveco-mcp/harmonyos_knowledge_search |
+| `documenter` | read, edit, deveco-mcp/harmonyos_knowledge_search |
+| `migrator` | read, edit, execute, deveco-mcp/harmonyos_knowledge_search, deveco-mcp/check_ets_files |
+| `builder` | execute, read, edit, deveco-mcp/build_project, deveco-mcp/start_app, deveco-mcp/get_uidump, deveco-mcp/execute_uitest |
+| `fixer` | read, edit, execute, deveco-mcp/harmonyos_knowledge_search, deveco-mcp/check_ets_files, deveco-mcp/build_project, deveco-mcp/start_app |
 
-### MCP Server — harmony-docs
+### MCP Server — deveco-mcp（主要）
 
-本地运行的 MCP 服务，提供对完整鸿蒙 API 文档的实时查询，替代过期的静态文档。
+由 DevEco Toolbox 提供的 MCP 服务，提供完整的鸿蒙开发工具链支持。
+
+**7 个工具：**
+
+| 工具 | 功能 |
+|------|------|
+| `harmonyos_knowledge_search` | 按关键词查询鸿蒙云端知识库（已实时更新至 API 22） |
+| `check_ets_files` | 对 ETS 文件进行 ArkTS 静态语法检查 |
+| `build_project` | 编译构建项目，导出 HAR/HAP/APP |
+| `start_app` | 构建并推包到模拟器/真机运行，支持自动启动模拟器 |
+| `get_uidump` | 获取 App 当前页面的 UI 树 |
+| `execute_uitest` | 在 App 页面执行 click/inputText/screenshot 等 UI 操作 |
+| `create_harmony_project` | 创建鸿蒙模板工程 |
+
+### MCP Server — harmony-docs（备用）
+
+本地运行的 MCP 服务，提供对完整鸿蒙 API 文档的离线查询（静态文档，API 12 版本）。
 
 **4 个工具：**
 
@@ -94,7 +111,8 @@ library-port-to-harmony-by-agent/
 
 `.github/instructions/harmony-dev-rules.instructions.md` 自动注入所有 Agent，强制执行：
 - 项目结构约束（`bundleName`、目录路径）
-- API 查询必须走 MCP（禁止依赖过期静态文档）
+- API 查询必须走 `deveco-mcp/harmonyos_knowledge_search`（禁止依赖过期静态文档）
+- 构建优先使用 `deveco-mcp/build_project`，备用 `hvigorw` 终端命令
 - 构建顺序与成功标准
 - ArkTS vs TypeScript 差异规则（50+ 条禁止项与替代方案）
 - 测试规范、文档生成规范
@@ -113,22 +131,27 @@ library-port-to-harmony-by-agent/
 
 ### 步骤 1：配置 MCP Server
 
-在 VS Code 的 `settings.json` 或项目的 `.vscode/mcp.json` 中添加：
+在项目的 `.vscode/mcp.json` 中配置（已预置）：
 
 ```json
 {
-  "mcp": {
-    "servers": {
-      "harmony-docs": {
-        "type": "stdio",
-        "command": "${workspaceFolder}/mcp-servers/harmony-docs/harmony-docs.exe"
-      }
+  "servers": {
+    "deveco-mcp": {
+      "command": "cmd",
+      "args": ["/C", "C:\\path\\to\\deveco-toolbox\\deveco-mcp-server.exe"],
+      "env": { "PROJECT_PATH": "${workspaceFolder}" }
+    },
+    "harmony-docs": {
+      "type": "stdio",
+      "command": "${workspaceFolder}/mcp-servers/harmony-docs/harmony-docs.exe"
     }
   }
 }
 ```
 
-> Linux/macOS 用户需先编译：
+> **deveco-mcp** 需提前安装 [DevEco Toolbox](https://developer.huawei.com/consumer/cn/deveco-studio/)，更新 `deveco-mcp-server.exe` 路径为实际安装位置。
+>
+> **harmony-docs**（备用离线文档）Linux/macOS 用户需先编译：
 > ```bash
 > cd mcp-servers/harmony-docs
 > go build -o harmony-docs .

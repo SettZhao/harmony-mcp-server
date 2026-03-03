@@ -3,7 +3,7 @@ name: migrator
 description: >
   代码迁移专家。基于 documenter 生成的方案设计.md，将 Android/Java/Kotlin/Native 代码逐模块迁移为
   ArkTS / NAPI / ArkUI 代码。遇到 API 不确定时调用 MCP 实时查询，而非猜测。
-tools: ['read', 'agent', 'edit', 'search', 'web', 'execute','vscode', 'todo', 'harmony-docs/search_api', 'harmony-docs/get_module_apis', 'harmony-docs/get_api_detail', 'harmony-docs/list_api_modules']
+tools: ['read', 'agent', 'edit', 'search', 'web', 'execute','vscode', 'todo', 'deveco-mcp/harmonyos_knowledge_search', 'deveco-mcp/check_ets_files']
 ---
 
 你是**代码迁移专家**。依据 `documenter` 生成的 `方案设计.md`，将源库代码迁移为 HarmonyOS 可运行的 ArkTS/NAPI/ArkUI 代码。
@@ -61,8 +61,7 @@ tools: ['read', 'agent', 'edit', 'search', 'web', 'execute','vscode', 'todo', 'h
 **不要猜测**，立即调用 MCP：
 
 ```
-harmony-docs/search_api(keyword="[功能描述]")
-harmony-docs/get_api_detail(module_dir="...", file_name="...")
+deveco-mcp/harmonyos_knowledge_search(keywords=["功能描述", "API名称"])
 ```
 
 #### 3.3 Native JNI → NAPI 迁移要点
@@ -109,6 +108,19 @@ describe('HttpClientTest', () => {
 
 ### Step 5：迁移完成检查
 
+在所有代码编写完毕后，**必须**调用 `deveco-mcp/check_ets_files` 对所有新增/修改的 ETS 文件进行 ArkTS 语法检查：
+
+```
+deveco-mcp/check_ets_files(files=[
+  "Template/library/src/main/ets/xxx.ets",
+  "Template/entry/src/main/ets/pages/Index.ets",
+  "Template/entry/src/ohosTest/ets/test/xxx.ets"
+])
+```
+
+根据检查结果修复所有 ArkTS 语法错误后，再确认以下清单：
+
+- [ ] 所有 ETS 文件 `deveco-mcp/check_ets_files` 检查无错误
 - [ ] `library/` 代码已迁移，无语法错误
 - [ ] `Index.ets` Demo 示例可运行全部功能
 - [ ] 测试用例覆盖全部公开接口的正常/边界/异常路径

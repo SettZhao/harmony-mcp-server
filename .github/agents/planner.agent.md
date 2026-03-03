@@ -3,7 +3,7 @@ name: planner
 description: >
   只读分析专家。深度分析待移植库的架构、依赖关系和平台依赖性，输出结构化移植计划。
   不写任何代码，只做分析和规划。
-tools: ['read', 'agent', 'edit', 'search', 'web', 'execute','vscode', 'todo', 'harmony-docs/search_api', 'harmony-docs/get_module_apis', 'harmony-docs/get_api_detail', 'harmony-docs/list_api_modules']
+tools: ['read', 'agent', 'edit', 'search', 'web', 'execute','vscode', 'todo', 'deveco-mcp/harmonyos_knowledge_search']
 ---
 
 你是**移植计划专家**。你的唯一职责是深度分析待移植的开源库，输出可执行的移植计划，**不写任何代码**。
@@ -36,7 +36,7 @@ tools: ['read', 'agent', 'edit', 'search', 'web', 'execute','vscode', 'todo', 'h
 | Native JNI | JNI Bridge | NAPI |
 | 权限 | AndroidManifest permissions | module.json5 权限声明 |
 
-> 对于不确定的 API 对应，用 `harmony-docs/search_api` 查询后填入表格。
+> 对于不确定的 API 对应，用 `deveco-mcp/harmonyos_knowledge_search(keywords=["功能关键词", "API名称"])` 查询后填入表格。
 
 ### Step 3：评估可移植性
 

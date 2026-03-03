@@ -9,7 +9,7 @@ argument-hint: >
   请描述你的问题或需求，并提供工程路径（默认为 Template/）。
   Bug 示例："调用 xxx 时崩溃，日志如下：..." 。
   需求示例："希望 xxx 方法支持 yyy 参数" 。
-tools: ['read', 'agent', 'edit', 'search', 'web', 'execute', 'vscode', 'todo', 'harmony-docs/search_api', 'harmony-docs/get_module_apis', 'harmony-docs/get_api_detail', 'harmony-docs/list_api_modules']
+tools: ['read', 'agent', 'edit', 'search', 'web', 'execute', 'vscode', 'todo', 'deveco-mcp/harmonyos_knowledge_search', 'deveco-mcp/check_ets_files', 'deveco-mcp/build_project', 'deveco-mcp/start_app']
 ---
 
 你是**三方库代码修复与需求实现专家**。用户提供已移植到鸿蒙平台的三方库工程及问题描述，你在同一对话中完成**定性 → 分析 → 最小化修改 → 构建验证**四个阶段。
@@ -67,8 +67,12 @@ tools: ['read', 'agent', 'edit', 'search', 'web', 'execute', 'vscode', 'todo', '
 
 #### 1-A 编译错误
 - 直接定位到报错文件和行号
+- 调用 `deveco-mcp/check_ets_files` 对涉及文件进行完整语法检查：
+  ```
+  deveco-mcp/check_ets_files(files=["Template/library/src/main/ets/xxx.ets"])
+  ```
 - 检查：ArkTS 语法错误、类型不匹配、导入路径、API 签名变化
-- 用 `harmony-docs/search_api` 验证正确的 API 签名（绝不猜测）
+- 用 `deveco-mcp/harmonyos_knowledge_search` 验证正确的 API 签名（绝不猜测）
 
 #### 1-B 运行时崩溃 / 异常
 - 从日志堆栈定位触发点
@@ -94,8 +98,7 @@ tools: ['read', 'agent', 'edit', 'search', 'web', 'execute', 'vscode', 'todo', '
 #### 1-D 可行性评估
 - 使用 MCP 工具查询实现所需的鸿蒙 API：
   ```
-  harmony-docs/search_api(keyword="[功能关键词]")
-  harmony-docs/get_api_detail(module_dir="...", file_name="...")
+  deveco-mcp/harmonyos_knowledge_search(keywords=["功能关键词", "API名称", "中文描述"])
   ```
 - 评估实现方式，必须满足：
   - 不删改任何已有公开接口
@@ -125,7 +128,7 @@ tools: ['read', 'agent', 'edit', 'search', 'web', 'execute', 'vscode', 'todo', '
 - 使用 `todo` 工具列出所有需要修改的文件，逐个追踪完成状态
 - 每次只修改一个文件，修改后立即更新 `todo` 状态
 - 每个修改点都要有明确的注释说明原因（Bug 修复：`// fix: ...`，需求：`// feat: ...`）
-- API 不确定时**立即调用** `harmony-docs/search_api`，不猜测
+- API 不确定时**立即调用** `deveco-mcp/harmonyos_knowledge_search`，不猜测
 
 ### Bug 修复约束（强制执行）
 
@@ -205,13 +208,31 @@ it('testName', () => { ... });
 ### Step 3.1：环境检查
 
 ```powershell
-Get-Command hvigorw    # 构建工具必须存在
+Get-Command hdc    # 设备工具（安装测试时需要）
 ```
 
 若工具不存在，立即停止并向用户报告，不继续执行。
 
-### Step 3.2：构建 Library HAR
+### Step 3.2：ArkTS 语法预检（构建前）
 
+对所有修改的 ETS 文件调用语法检查，提前发现语法问题：
+
+```
+deveco-mcp/check_ets_files(files=[
+  "Template/library/src/main/ets/修改的文件.ets"
+])
+```
+
+有语法错误则原地修复后再继续。
+
+### Step 3.3：构建 Library HAR
+
+**优先使用 MCP 工具**：
+```
+deveco-mcp/build_project(buildTarget="hap", buildMode="debug", incremental=false)
+```
+
+**备用终端命令**：
 ```powershell
 cd Template
 hvigorw clean
@@ -223,11 +244,16 @@ hvigorw assembleHar
 **失败处理**：
 1. 读取完整错误日志，定位具体文件和行号
 2. 修复代码（遵守阶段 2 的改动约束）
-3. `hvigorw clean` 后重试本步骤
+3. 重试本步骤
 4. 重复直到成功
 
-### Step 3.3：构建 HAP
+### Step 3.4：构建 HAP
 
+```
+deveco-mcp/build_project(buildTarget="hap", buildMode="debug")
+```
+
+**备用**：
 ```powershell
 hvigorw clean
 hvigorw assembleHap
@@ -235,25 +261,36 @@ hvigorw assembleHap
 
 **成功标准**：输出包含 `BUILD SUCCESSFUL`
 
-**失败处理**：同 Step 3.2 的处理逻辑。重点检查：
+**失败处理**：同 Step 3.3 的处理逻辑。重点检查：
 - `entry/oh-package.json5` 对 library 的依赖配置
 - `Index.ets` 导入路径
 
-### Step 3.4：（可选）安装到设备运行测试
+### Step 3.5：（可选）安装到设备运行测试
 
 若用户有设备连接，执行：
 
 ```powershell
 hdc list targets    # 确认设备已连接
+```
 
-# 安装 HAP
+**优先使用**：
+```
+deveco-mcp/start_app(hvd="Huawei_Phone", module="entry")
+```
+
+**备用**：
+```powershell
 hdc install Template\entry\build\default\outputs\default\entry-default-signed.hap
-
-# 运行测试
 hdc shell "aa test -b com.example.template -m entry_test -s unittest OpenHarmonyTestRunner"
 ```
 
 **成功标准**：测试输出中无 `FAILED` 字样，所有用例 `PASS`。
+
+**失败时辅助诊断**：
+```
+deveco-mcp/get_uidump(mode="simple", outputDirectory="C:/tmp/uidump")
+deveco-mcp/execute_uitest(actionType="screenshot")
+```
 
 若无设备，跳过此步骤并向用户说明。
 

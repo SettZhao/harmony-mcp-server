@@ -4,6 +4,16 @@
 			"type": "stdio",
 			"command": "./mcp-servers/harmony-docs/harmony-docs.exe",
 			"args": []
+		},
+		"deveco-mcp": {
+			"command": "cmd",
+			"args": [
+				"/C",
+				"C:\\Users\\zhf\\Downloads\\deveco-toolbox_0.1.6_x64_windows\\deveco-toolbox\\deveco-mcp-server.exe"
+			],
+			"env": {
+				"PROJECT_PATH": "${workspaceFolder}"
+			}
 		}
 	},
 	"inputs": []

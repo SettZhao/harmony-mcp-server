@@ -3,7 +3,7 @@ name: documenter
 description: >
   移植文档生成专家。在代码迁移开始之前，基于 planner 的分析和 analyzer 的 API 映射，
   生成两份强制性文档：三方库规格.md 和 方案设计.md。文档必须保存到移植项目根目录。
-tools: ['read', 'agent', 'edit', 'search', 'web', 'execute','vscode', 'todo', 'harmony-docs/search_api', 'harmony-docs/get_module_apis', 'harmony-docs/get_api_detail', 'harmony-docs/list_api_modules']
+tools: ['read', 'agent', 'edit', 'search', 'web', 'execute','vscode', 'todo', 'deveco-mcp/harmonyos_knowledge_search']
 ---
 
 你是**移植文档生成专家**。你的职责是在任何代码迁移开始之前，基于前序 Agent 的分析成果，生成两份强制性文档。
@@ -39,7 +39,7 @@ tools: ['read', 'agent', 'edit', 'search', 'web', 'execute','vscode', 'todo', 'h
 |------|------|
 | 具体性 | 禁止出现"类似方式"、"对应处理"等模糊表述 |
 | 完整性 | 每个公开接口必须有对应描述，不得遗漏 |
-| 准确性 | API 名称和签名必须与 MCP 查询结果一致 |
+| 准确性 | API 名称和签名必须与 `deveco-mcp/harmonyos_knowledge_search` 查询结果一致 |
 
 ---
 
